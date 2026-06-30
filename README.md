@@ -1,26 +1,29 @@
 # Sistema de Gestión de Libros Electrónicos
 
 **Autor:** Kevin Tupiza  
-**Fecha:** 24/05/2026  
+**Fecha:** 24/05/2026 (Actualizado)  
 **Descripción:** Aprendizaje Autónomo 1 - Selección de Sistemas de Gestión Empresarial (Libros Electrónicos)
 
 ---
 
-Este proyecto es una aplicación de consola en **Go** diseñada para gestionar un catálogo de libros electrónicos. Combina el paradigma estructural de Go, la programación funcional (funciones de orden superior y closures) y la persistencia relacional robusta en **PostgreSQL** mediante el ORM **GORM**.
+Este proyecto es una aplicación web y API REST escrita en **Go** diseñada para gestionar un catálogo de libros electrónicos. La aplicación expone endpoints interactivos para consultas y filtros basados en programación funcional, permite la persistencia de datos mediante el ORM **GORM** en **PostgreSQL**, e incorpora una interfaz gráfica minimalista en colores negro y azul eléctrico de primer nivel.
 
 ## Características Principales
 
-*   **Persistencia Relacional con GORM**: Conexión real a una base de datos PostgreSQL.
-*   **Inicialización Inteligente**:
-    *   Verificación y auto-creación de la base de datos `ebooks_db` si no existe al arrancar.
-    *   Migración automática de esquema (`AutoMigrate`) de la tabla de libros.
-    *   Inserción automática de datos semilla (`Seeding`) si la tabla de la base de datos está vacía.
-*   **Mecanismo de Resiliencia (Fallback)**: Si la conexión a la base de datos PostgreSQL no está disponible, la aplicación carga y opera de manera transparente usando un catálogo de respaldo en memoria.
-*   **Filtrado Funcional**: Utiliza funciones de orden superior y closures para aplicar predicados puros sobre colecciones de libros (evitando efectos secundarios):
-    *   Filtrado por género exacto (`FilterByGenre`).
-    *   Filtrado por precio máximo (`FilterByPriceLessThan`).
-    *   Filtrado por disponibilidad para descarga (`FilterAvailable`).
-*   **Menú Interactivo de Consola**: Interfaz de línea de comandos para que el usuario opere fácilmente.
+*   **Interfaz Gráfica Premium (Web Dashboard)**:
+    *   Diseño minimalista moderno con paleta en negro profundo (`#030712`) y azul eléctrico.
+    *   Glassmorphism en componentes y micro-animaciones en tarjetas de libros.
+    *   Demostración interactiva client-side de la encapsulación interna y mutaciones (Getter/Setter).
+*   **Filtros Funcionales Puros (Higher-Order Functions)**:
+    *   Uso de predicados de filtrado dinámico para género (`FilterByGenre`), precio límite (`FilterByPriceLessThan`) y disponibilidad activa (`FilterAvailable`).
+*   **Persistencia y Auto-gestión con GORM**:
+    *   Verificación automática de base de datos e inserción inteligente de registros semilla (Seeding).
+    *   **Resiliencia (Fallback)**: Si no se detecta la base de datos PostgreSQL activa, la aplicación cambia de modo automáticamente y sirve la información desde un catálogo local en memoria para evitar colapsos.
+*   **API REST y Rutas CRUD**:
+    *   `/api/catalogo`: Obtención de catálogo completo y filtrado dinámico por parámetros query (`?genre=X`, `?max_price=Y`, `?available=true`).
+    *   `/api/catalogo/buscar`: Búsqueda específica de libros por su llave primaria (ID) mediante la consulta `?id=X`.
+*   **Testing de Calidad**:
+    *   Pruebas unitarias para validar la encapsulación de variables y funciones de orden superior.
 
 ---
 
@@ -30,29 +33,35 @@ Este proyecto es una aplicación de consola en **Go** diseñada para gestionar u
 project/
 │
 ├── books/
-│   └── books.go       # Entidad Book y lógica de filtrado funcional (HOF y Predicados)
+│   ├── books.go         # Entidad Book, encapsulación de estado y predicados funcionales
+│   └── books_test.go    # Pruebas unitarias de encapsulación y filtros funcionales
 │
 ├── config/
-│   └── config.go      # Carga de variables de entorno mediante godotenv con valores por defecto
+│   └── config.go        # Configuración por variables de entorno (.env)
 │
 ├── database/
-│   └── db.go          # Configuración de GORM, auto-creación de base de datos y semillado
+│   └── db.go            # Inicialización de PostgreSQL mediante GORM y semillado
 │
-├── .env.example       # Plantilla de variables de entorno
-├── .env               # Configuración local (excluido en git)
-├── .gitignore         # Exclusiones de Git (evita subir credenciales y archivos binarios)
-├── go.mod             # Módulo de Go
-├── go.sum             # Sumas de verificación de dependencias de Go
-├── README.md          # Documentación del proyecto (este archivo)
-└── main.go            # Inicializador de la aplicación, menú iterativo y control de flujo
+├── public/              # Archivos estáticos de la interfaz web
+│   ├── index.html       # Estructura e interfaz gráfica del dashboard
+│   ├── style.css        # Hoja de estilos con tema azul/negro y efectos visuales
+│   └── app.js           # Lógica JavaScript para fetching de API y control del DOM
+│
+├── .env.example         # Plantilla de variables de entorno
+├── .env                 # Credenciales locales de base de datos (ignorado en git)
+├── .gitignore           # Archivos ignorados por Git
+├── go.mod               # Módulo Go
+├── go.sum               # Verificación de dependencias
+├── README.md            # Documentación del proyecto (este archivo)
+└── main.go              # Servidor HTTP, controlador de API y logger asíncrono
 ```
 
 ---
 
 ## Requisitos Previos
 
-1.  **Go** (versión 1.20 o superior).
-2.  **PostgreSQL** (versión 17 o superior) instalado y ejecutándose en tu máquina local.
+1.  **Go** (versión 1.21 o superior).
+2.  **PostgreSQL** (versión 17 o superior) en ejecución local.
 
 ---
 
@@ -63,7 +72,7 @@ Copia el archivo `.env.example` y renómbralo a `.env`:
 ```bash
 cp .env.example .env
 ```
-Abre el archivo `.env` y configura tus credenciales locales de PostgreSQL:
+Abre el archivo `.env` e ingresa tus credenciales de PostgreSQL:
 ```env
 DB_HOST=localhost
 DB_USER=postgres
@@ -73,27 +82,34 @@ DB_PORT=5432
 APP_ENV=development
 ```
 
-### 2. Instalación de Dependencias
-Descarga las dependencias del proyecto:
-```bash
-go get sistema_ebooks/config
-go get sistema_ebooks/database
-```
-
-### 3. Ejecución
-Inicia la aplicación:
+### 2. Ejecutar la Aplicación
+Descarga las dependencias e inicia el servidor web:
 ```bash
 go run main.go
 ```
 
-Al ejecutarse, la consola mostrará los logs de inicialización indicando si se creó la base de datos o si se conectó exitosamente a una base de datos existente, seguido del menú operacional.
+Al iniciar, la terminal te indicará la conexión a PostgreSQL y levantará la interfaz web:
+```text
+==========================================================
+ SERVIDOR WEB INICIADO: Abre http://localhost:8080 en tu navegador
+==========================================================
+```
+Abre tu navegador de preferencia e ingresa a: **http://localhost:8080**
 
 ---
 
-## Opciones del Menú
+## Ejecución de Pruebas Unitarias
+Para verificar que la encapsulación del estado interno del libro y el filtrado funcional operen correctamente, ejecuta en la terminal:
+```bash
+go test ./books -v
+```
 
-1.  **Listar Catálogo Completo**: Muestra todos los libros almacenados en la base de datos PostgreSQL.
-2.  **Filtrar Libros de 'Tecnología'**: Filtra la colección mostrando únicamente aquellos pertenecientes al género de Tecnología.
-3.  **Filtrar por Precio Económico**: Muestra libros con un costo menor o igual a `$30.00`.
-4.  **Mostrar Disponibles para Descarga**: Muestra únicamente los libros que cuentan con disponibilidad activa (`IsAvailable: true`).
-5.  **Salir**: Cierra limpiamente la aplicación.
+**Salida exitosa esperada:**
+```text
+=== RUN   TestEncapsulacionEstadoInterno
+--- PASS: TestEncapsulacionEstadoInterno (0.00s)
+=== RUN   TestFiltradoFuncional
+--- PASS: TestFiltradoFuncional (0.00s)
+PASS
+ok  	sistema_ebooks/books	1.012s
+```
