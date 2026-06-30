@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Book Manager | Dashboard</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo"></div>
+                <h2>E-Books Go</h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" id="btn-all-menu">
+                    <span class="icon">📚</span> Catálogo Completo
+                </a>
+                <a href="#" class="nav-item" id="btn-tech-menu">
+                    <span class="icon">💻</span> Tecnología (HOF)
+                </a>
+                <a href="#" class="nav-item" id="btn-cheap-menu">
+                    <span class="icon">💰</span> Económicos (≤ $30)
+                </a>
+                <a href="#" class="nav-item" id="btn-avail-menu">
+                    <span class="icon">⚡</span> Disponibles
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p class="status-indicator online">PostgreSQL Conectado</p>
+                <p class="author-tag">Kevin Tupiza</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search-input" placeholder="Buscar libro por ID (ej. 1)...">
+                    <button id="search-btn" class="primary-btn">Buscar</button>
+                </div>
+                <div class="system-status">
+                    <span class="badge">API v1.0</span>
+                </div>
+            </header>
+
+            <section class="dashboard-header">
+                <div>
+                    <h1 id="page-title">Catálogo Completo</h1>
+                    <p class="subtitle" id="page-subtitle">Explora todos los libros electrónicos y filtra usando programación funcional.</p>
+                </div>
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <span class="stat-value" id="stat-total">0</span>
+                        <span class="stat-label">Libros</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Active Filters Indicators -->
+            <div class="active-filters" id="active-filters-container">
+                <!-- Badges will be inserted dynamically here -->
+            </div>
+
+            <!-- Dynamic Books Grid -->
+            <div class="books-grid" id="books-grid">
+                <!-- Cards will be populated dynamically here -->
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Cargando catálogo de libros...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Details Modal for Book Encapsulation / Actions -->
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Detalles del Libro</h3>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Content injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

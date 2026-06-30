@@ -2,13 +2,28 @@ package books
 
 // Book representa la entidad estructural del libro electrónico (Inmutable por diseño funcional)
 type Book struct {
-	ID          uint
-	Title       string
-	Author      string
-	Genre       string
-	Price       float64
-	IsAvailable bool
+	ID            uint
+	Title         string
+	Author        string
+	Genre         string
+	Price         float64
+	IsAvailable   bool
+	estadoInterno string
 }
+
+// GetEstadoInterno retorna el estado interno del libro (encapsulación)
+func (b *Book) GetEstadoInterno() string {
+	if b.estadoInterno == "" {
+		return "Sin auditar"
+	}
+	return b.estadoInterno
+}
+
+// SetEstadoInterno modifica el estado interno del libro (encapsulación)
+func (b *Book) SetEstadoInterno(estado string) {
+	b.estadoInterno = estado
+}
+
 
 // BookPredicate define el tipo de función pura de orden superior para realizar filtrados dinámicos
 type BookPredicate func(Book) bool
